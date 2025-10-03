@@ -8,7 +8,7 @@ export function createDefaultImage(): string {
   tempCanvas.width = size;
   tempCanvas.height = size;
 
-  // Create animated particle-like gradient background
+  // Create animated particle-like gradient background with better contrast
   const gradient = tempCtx.createRadialGradient(
     size / 2,
     size / 2,
@@ -17,16 +17,17 @@ export function createDefaultImage(): string {
     size / 2,
     size / 1.4
   );
-  gradient.addColorStop(0, '#667eea');
-  gradient.addColorStop(0.3, '#764ba2');
-  gradient.addColorStop(0.6, '#f093fb');
-  gradient.addColorStop(1, '#f5576c');
+  // Use colors with better contrast that work in both light and dark modes
+  gradient.addColorStop(0, '#4f46e5'); // Indigo
+  gradient.addColorStop(0.3, '#7c3aed'); // Violet
+  gradient.addColorStop(0.6, '#ec4899'); // Pink
+  gradient.addColorStop(1, '#ef4444'); // Red
 
   tempCtx.fillStyle = gradient;
   tempCtx.fillRect(0, 0, size, size);
 
-  // Add particle effect dots
-  tempCtx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+  // Add particle effect dots with medium contrast
+  tempCtx.fillStyle = 'rgba(30, 30, 30, 0.8)'; // Dark particles for better visibility
   for (let i = 0; i < 30; i++) {
     const drawX = Math.random() * size;
     const drawY = Math.random() * size;
@@ -37,14 +38,13 @@ export function createDefaultImage(): string {
     tempCtx.fill();
   }
 
-  // Add some glowing particles
-  tempCtx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+  // Add some glowing particles with better contrast
   for (let i = 0; i < 10; i++) {
     const drawX = Math.random() * size;
     const drawY = Math.random() * size;
     const radius = Math.random() * 4 + 1;
 
-    // Create glow effect
+    // Create glow effect with medium tones
     const glowGradient = tempCtx.createRadialGradient(
       drawX,
       drawY,
@@ -53,30 +53,30 @@ export function createDefaultImage(): string {
       drawY,
       radius * 3
     );
-    glowGradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
-    glowGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.3)');
-    glowGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    glowGradient.addColorStop(0, 'rgba(100, 100, 100, 0.8)'); // Medium gray
+    glowGradient.addColorStop(0.5, 'rgba(100, 100, 100, 0.3)');
+    glowGradient.addColorStop(1, 'rgba(100, 100, 100, 0)');
 
     tempCtx.fillStyle = glowGradient;
     tempCtx.beginPath();
     tempCtx.arc(drawX, drawY, radius * 3, 0, Math.PI * 2);
     tempCtx.fill();
 
-    // Core particle
-    tempCtx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    // Core particle with good contrast
+    tempCtx.fillStyle = 'rgba(50, 50, 50, 0.9)'; // Dark gray for visibility
     tempCtx.beginPath();
     tempCtx.arc(drawX, drawY, radius, 0, Math.PI * 2);
     tempCtx.fill();
   }
 
-  // Create stylized "PFX" text with particle effect
-  tempCtx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+  // Create stylized "PFX" text with better contrast
+  tempCtx.fillStyle = 'rgba(30, 30, 30, 0.95)'; // Dark text for better visibility
   tempCtx.font = 'bold 32px Arial';
   tempCtx.textAlign = 'center';
   tempCtx.textBaseline = 'middle';
 
-  // Add text shadow/glow
-  tempCtx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+  // Add text shadow/glow with medium contrast
+  tempCtx.shadowColor = 'rgba(100, 100, 100, 0.5)';
   tempCtx.shadowBlur = 10;
   tempCtx.shadowOffsetX = 0;
   tempCtx.shadowOffsetY = 0;
@@ -84,7 +84,7 @@ export function createDefaultImage(): string {
   tempCtx.fillText('PFX', size / 2, size / 2);
 
   // Add connecting lines between some particles for network effect
-  tempCtx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+  tempCtx.strokeStyle = 'rgba(60, 60, 60, 0.4)'; // Medium gray lines
   tempCtx.lineWidth = 1;
   tempCtx.beginPath();
 
