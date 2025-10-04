@@ -1,25 +1,49 @@
 import { ParticleCanvas } from './index';
-import { parseValue } from './utils';
+import { parseValue, debounce } from './utils';
 import { applyClickForce } from './particle';
+
+const eventHandlers = new WeakMap<
+  ParticleCanvas,
+  {
+    mousemove: (e: MouseEvent) => void;
+    mouseleave: () => void;
+    click: (e: MouseEvent) => void;
+    resize: () => void;
+  }
+>();
 
 export function setupEventListeners(
   instance: ParticleCanvas,
   canvas: HTMLCanvasElement
 ) {
-  canvas.addEventListener('mousemove', (e) => onMouseMove(e, instance));
-  canvas.addEventListener('mouseleave', () => onMouseLeave(instance));
-  canvas.addEventListener('click', (e) => onClick(e, instance));
-  window.addEventListener('resize', () => onResize(instance));
+  const handlers = {
+    mousemove: (e: MouseEvent) => onMouseMove(e, instance),
+    mouseleave: () => onMouseLeave(instance),
+    click: (e: MouseEvent) => onClick(e, instance),
+    resize: debounce(() => onResize(instance), 300),
+  };
+
+  eventHandlers.set(instance, handlers);
+
+  canvas.addEventListener('mousemove', handlers.mousemove);
+  canvas.addEventListener('mouseleave', handlers.mouseleave);
+  canvas.addEventListener('click', handlers.click);
+  window.addEventListener('resize', handlers.resize);
 }
 
 export function removeEventListeners(
   instance: ParticleCanvas,
   canvas: HTMLCanvasElement
 ) {
-  canvas.removeEventListener('mousemove', (e) => onMouseMove(e, instance));
-  canvas.removeEventListener('mouseleave', () => onMouseLeave(instance));
-  canvas.removeEventListener('click', (e) => onClick(e, instance));
-  window.removeEventListener('resize', () => onResize(instance));
+  const handlers = eventHandlers.get(instance);
+  if (!handlers) return;
+
+  canvas.removeEventListener('mousemove', handlers.mousemove);
+  canvas.removeEventListener('mouseleave', handlers.mouseleave);
+  canvas.removeEventListener('click', handlers.click);
+  window.removeEventListener('resize', handlers.resize);
+
+  eventHandlers.delete(instance);
 }
 
 function onMouseMove(e: MouseEvent, instance: ParticleCanvas) {
