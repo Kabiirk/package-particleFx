@@ -78,6 +78,55 @@ export function updateParticle(
   }
 }
 
+/**
+ * Calculate luminance of a color to determine if it's light or dark
+ */
+function getLuminance(r: number, g: number, b: number): number {
+  // Convert RGB to relative luminance using sRGB formula
+  const rsRGB = r / 255;
+  const gsRGB = g / 255;
+  const bsRGB = b / 255;
+
+  const rLinear = rsRGB <= 0.03928 ? rsRGB / 12.92 : Math.pow((rsRGB + 0.055) / 1.055, 2.4);
+  const gLinear = gsRGB <= 0.03928 ? gsRGB / 12.92 : Math.pow((gsRGB + 0.055) / 1.055, 2.4);
+  const bLinear = bsRGB <= 0.03928 ? bsRGB / 12.92 : Math.pow((bsRGB + 0.055) / 1.055, 2.4);
+
+  return 0.2126 * rLinear + 0.7152 * gLinear + 0.0722 * bLinear;
+}
+
+/**
+ * Enhance color contrast for better visibility
+ */
+function enhanceContrast(color: [number, number, number, number]): [number, number, number, number] {
+  const [r, g, b, a] = color;
+  const luminance = getLuminance(r, g, b);
+  
+  // If the color is too light (luminance > 0.8), darken it
+  if (luminance > 0.8) {
+    const factor = 0.3; // Darken by 70%
+    return [
+      Math.round(r * factor),
+      Math.round(g * factor),
+      Math.round(b * factor),
+      a
+    ];
+  }
+  
+  // If the color is too dark (luminance < 0.2), lighten it slightly
+  if (luminance < 0.2) {
+    const factor = 1.5; // Lighten by 50%
+    return [
+      Math.min(255, Math.round(r * factor)),
+      Math.min(255, Math.round(g * factor)),
+      Math.min(255, Math.round(b * factor)),
+      a
+    ];
+  }
+  
+  // Color has good contrast, return as is
+  return color;
+}
+
 export function drawParticle(
   particle: Particle,
   origin: Origin,
@@ -90,7 +139,11 @@ export function drawParticle(
     config.hueRotation as number,
     config.brightness as number // This is the new line you need to add
   );
-  ctx.fillStyle = `rgba(${filteredColor[0]}, ${filteredColor[1]}, ${filteredColor[2]}, ${filteredColor[3] / 255})`;
+  
+  // Enhance contrast for better visibility in light mode
+  const enhancedColor = enhanceContrast(filteredColor);
+  
+  ctx.fillStyle = `rgba(${enhancedColor[0]}, ${enhancedColor[1]}, ${enhancedColor[2]}, ${enhancedColor[3] / 255})`;
 
   const x = Math.floor(particle.x);
   const y = Math.floor(particle.y);
